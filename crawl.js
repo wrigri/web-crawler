@@ -1,3 +1,6 @@
+const { JSDOM } = require('jsdom')
+const path = require('node:path')
+
 const normalizeURL = (url) => {
     const nUrl = new URL(url)
     let path = nUrl.pathname
@@ -14,8 +17,20 @@ const normalizeURL = (url) => {
         }
     }
     return `${nUrl.hostname}/${path}`
-} 
+}
+
+const getURLsFromHTML = (htmlBody, baseURL) => {
+    const dom = new JSDOM(htmlBody)
+    const alist = dom.window.document.querySelectorAll('a')
+    const newlist = []
+    for (let atag of alist) {
+        const url = new URL(atag.href, baseURL)
+        newlist.push(url.href)
+    }
+    return newlist
+}
 
 module.exports = {
-    normalizeURL
+    normalizeURL,
+    getURLsFromHTML,
 }
